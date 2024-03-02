@@ -1,0 +1,8 @@
+{
+    "name": "pamald-yarn-tester-01",
+    "description": "Test helper.",
+    "private": true,
+    "dependencies": {
+        "find-versions": "5.0.0"
+    }
+}

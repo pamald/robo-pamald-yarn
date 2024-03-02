@@ -1,0 +1,9 @@
+includes:
+	- .phpstan/parameters.general.neon
+	- .phpstan/parameters.paths.neon
+	- .phpstan/parameters.ignoreErrors.baseline.neon
+	- .phpstan/parameters.ignoreErrors.custom.neon
+	- ./vendor/pamald/pamald/.phpstan/parameters.typeAliases.prod.neon
+	- ./vendor/pamald/robo-pamald/.phpstan/parameters.typeAliases.prod.neon
+	- .phpstan/parameters.typeAliases.prod.neon
+	- .phpstan/parameters.typeAliases.dev.neon

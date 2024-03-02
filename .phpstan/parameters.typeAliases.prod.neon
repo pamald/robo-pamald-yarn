@@ -1,0 +1,10 @@
+parameters:
+	typeAliases:
+		robo-pamald-yarn-collect-packages-task-options: '''
+			array{
+				assetNamePrefix?: string,
+				collector?: null|\Pamald\PamaldYarn\PackageCollector,
+				lock?: null|array<string, mixed>,
+				json?: null|array<string, mixed>,
+			}
+		'''

@@ -1,0 +1,121 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\:\\:setAssetNamePrefix\\(\\)\\.$#"
+			count: 1
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Robo\\\\Collection\\\\TaskForEach\\:\\:iterationMessage\\(\\)\\.$#"
+			count: 1
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Sweetchuck\\\\Robo\\\\Git\\\\Task\\\\GitListStagedFilesTask\\:\\:setPaths\\(\\)\\.$#"
+			count: 2
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Sweetchuck\\\\Robo\\\\Git\\\\Task\\\\GitReadStagedFilesTask\\:\\:setCommandOnly\\(\\)\\.$#"
+			count: 2
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Sweetchuck\\\\Robo\\\\Phpstan\\\\Task\\\\AnalyzeTask\\:\\:setNoProgress\\(\\)\\.$#"
+			count: 1
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\TaskForEach\\:\\:deferTaskConfiguration\\(\\)\\.$#"
+			count: 1
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Sweetchuck\\\\Robo\\\\Git\\\\Task\\\\GitReadStagedFilesTask\\:\\:deferTaskConfiguration\\(\\)\\.$#"
+			count: 2
+			path: ../RoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setOptions\\(\\)\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setContainer\\(\\)\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setOptions\\(\\)\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\Pamald\\\\Task\\\\LockDifferTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:deferTaskConfiguration\\(\\)\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\Pamald\\\\Task\\\\ReporterTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:deferTaskConfiguration\\(\\)\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\:\\:setAssetNamePrefix\\(\\)\\.$#"
+			count: 2
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Method AcceptanceRoboFile\\:\\:taskPamaldCollectYarnPackages\\(\\) should return Robo\\\\Collection\\\\CollectionBuilder but returns Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Method AcceptanceRoboFile\\:\\:taskPamaldYarnModifyCommitMsgParts\\(\\) should return Robo\\\\Collection\\\\CollectionBuilder but returns Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^PHPDoc tag @return with type Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder is not subtype of native type Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^PHPDoc tag @return with type Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder is not subtype of native type Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/AcceptanceRoboFile.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setOptions\\(\\)\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setContainer\\(\\)\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^Call to an undefined method Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setOptions\\(\\)\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^Method Pamald\\\\Robo\\\\PamaldYarn\\\\Tests\\\\Helper\\\\DummyTaskBuilder\\:\\:taskPamaldCollectYarnPackages\\(\\) should return Robo\\\\Collection\\\\CollectionBuilder but returns Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^Method Pamald\\\\Robo\\\\PamaldYarn\\\\Tests\\\\Helper\\\\DummyTaskBuilder\\:\\:taskPamaldYarnModifyCommitMsgParts\\(\\) should return Robo\\\\Collection\\\\CollectionBuilder but returns Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^PHPDoc tag @return with type Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\CollectYarnPackagesTask\\|Robo\\\\Collection\\\\CollectionBuilder is not subtype of native type Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php
+
+		-
+			message: "#^PHPDoc tag @return with type Pamald\\\\Robo\\\\PamaldYarn\\\\Task\\\\ModifyCommitMsgPartsTask\\|Robo\\\\Collection\\\\CollectionBuilder is not subtype of native type Robo\\\\Collection\\\\CollectionBuilder\\.$#"
+			count: 1
+			path: ../tests/src/Helper/DummyTaskBuilder.php

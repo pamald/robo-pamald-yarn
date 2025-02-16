@@ -1,16 +1,18 @@
 <?php
 
-/**
- * @noinspection PhpComposerExtensionStubsInspection
- */
-
 declare(strict_types = 1);
 
-use Consolidation\AnnotatedCommand\Attributes as Cli;
+use Consolidation\AnnotatedCommand\Attributes\Argument;
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Help;
+use Consolidation\AnnotatedCommand\Attributes\Hook;
+use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandResult;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use League\Container\Container as LeagueContainer;
 use NuvoleWeb\Robo\Task\Config\Robo\loadTasks as ConfigLoader;
+use Pamald\Robo\PamaldYarn\Tests\Attributes\InitLintReporters;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Collection\CollectionBuilder;
@@ -22,12 +24,16 @@ use Sweetchuck\LintReport\Reporter\BaseReporter;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Phpcs\PhpcsTaskLoader;
 use Sweetchuck\Robo\Phpstan\PhpstanTaskLoader;
+use Sweetchuck\Utils\Filter\EnabledFilter;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
+/**
+ * @phpstan-import-type PhpExecutable from \Pamald\Robo\PamaldYarn\Tests\Phpstan
+ */
 class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterface
 {
     use LoggerAwareTrait;
@@ -67,12 +73,12 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
         $this->testSuiteNames = [];
         $configFilePath = $this->fs->exists('phpunit.xml')
             ? 'phpunit.xml'
-            : 'phpunit.xml.dist';
+            : 'phpunit.dist.xml';
         $doc = new \DOMDocument();
         $doc->loadXML($this->fs->readFile($configFilePath));
         $xpath = new \DOMXPath($doc);
 
-        $nodes = $xpath->query('/phpunit/testsuites/testsuite');
+        $nodes = $xpath->query('/phpunit/testsuites/testsuite[@name]');
         if (!$nodes) {
             return $this;
         }
@@ -113,6 +119,29 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
             ->initComposerInfo()
             ->initEnvVarNamePrefix()
             ->initEnvironmentTypeAndName();
+    }
+
+    #[Hook(
+        type: HookManager::PRE_COMMAND_HOOK,
+        selector: InitLintReporters::SELECTOR,
+    )]
+    public function onHookPreCommandInitLintReporters(): void
+    {
+        $lintServices = BaseReporter::getServices();
+        $container = $this->getContainer();
+        if (!($container instanceof LeagueContainer)) {
+            return;
+        }
+
+        foreach ($lintServices as $name => $class) {
+            if ($container->has($name)) {
+                continue;
+            }
+
+            $container
+                ->add($name, $class)
+                ->setShared(false);
+        }
     }
 
     protected function initComposerInfo(): static
@@ -183,38 +212,17 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     }
 
     /**
-     * @hook pre-command @initLintReporters
+     * @phpstan-param array<string, mixed> $options
      */
-    public function initLintReporters(): void
-    {
-        $container = $this->getContainer();
-        if (!($container instanceof LeagueContainer)) {
-            return;
-        }
-
-        foreach (BaseReporter::getServices() as $name => $class) {
-            if ($container->has($name)) {
-                continue;
-            }
-
-            $container
-                ->add($name, $class)
-                ->setShared(false);
-        }
-    }
-
-    /**
-     * Exports the curren environment info.
-     *
-     * @command environment:info
-     *
-     * @param mixed[] $options
-     *
-     * @option string $format
-     *   Default: yaml
-     *
-     * @hidden
-     */
+    #[Command(name: 'environment:info')]
+    #[Help(
+        description: 'Exports the curren environment info.',
+        hidden: true,
+    )]
+    #[Option(
+        name: 'format',
+        description: 'Output format',
+    )]
     public function cmdEnvironmentInfoExecute(
         array $options = [
             'format' => 'yaml',
@@ -234,11 +242,13 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     }
 
     // region Command - build
-    #[Cli\Command(name: 'build')]
+    #[Command(name: 'build')]
     public function cmdBuildExecute(): TaskInterface
     {
         $cb = $this->collectionBuilder();
 
+        $prodNamespace = array_search('src/', $this->composerInfo['autoload']['psr-4'] ?? []);
+        $prodNamespace = trim((string) $prodNamespace, '\\');
         // @phpstan-ignore-next-line
         $taskPhpstanGeneratePhpProd = $this
             ->taskPhpstanGeneratePhp()
@@ -249,8 +259,10 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
                     ->name('parameters.typeAliases.prod.neon')
             )
             ->setDstFilePath('./src/Phpstan.php')
-            ->setNamespace('Pamald\Robo\Pamald');
+            ->setNamespace($prodNamespace);
 
+        $devNamespace = array_search('tests/src/', $this->composerInfo['autoload-dev']['psr-4'] ?? []);
+        $devNamespace = trim((string) $devNamespace, '\\');
         // @phpstan-ignore-next-line
         $taskPhpstanGeneratePhpDev = $this
             ->taskPhpstanGeneratePhp()
@@ -261,7 +273,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
                     ->name('parameters.typeAliases.dev.neon')
             )
             ->setDstFilePath('./tests/src/Phpstan.php')
-            ->setNamespace('Pamald\Robo\Pamald\Tests');
+            ->setNamespace($devNamespace);
 
         $cb->addTaskList([
             'phpstanGeneratePhp.prod' => $taskPhpstanGeneratePhpProd,
@@ -272,15 +284,12 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     }
     // endregion
 
-    /**
-     * Git "pre-commit" hook callback.
-     *
-     * @command githook:pre-commit
-     *
-     * @hidden
-     *
-     * @initLintReporters
-     */
+    #[Command(name: 'githook:pre-commit')]
+    #[Help(
+        description: 'Git "pre-commit" hook callback.',
+        hidden: true,
+    )]
+    #[InitLintReporters]
     public function cmdGitHookPreCommitExecute(): TaskInterface
     {
         $this->gitHook = 'pre-commit';
@@ -296,18 +305,24 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
             ]));
     }
 
-    /**
-     * @hook validate test
-     */
+    #[Hook(
+        type: HookManager::ARGUMENT_VALIDATOR,
+        target: 'test',
+    )]
     public function cmdTestValidate(CommandData $commandData): void
     {
         $input = $commandData->input();
-        $suiteNames = $input->getArgument('suiteNames');
-        if ($suiteNames) {
-            $invalidSuiteNames = array_diff($suiteNames, $this->getTestSuiteNames());
+        $actualSuiteNames = $input->getArgument('suiteNames');
+        if ($actualSuiteNames) {
+            $validSuiteNames = $this->getTestSuiteNames();
+            $invalidSuiteNames = array_diff($actualSuiteNames, $validSuiteNames);
             if ($invalidSuiteNames) {
                 throw new InvalidArgumentException(
-                    'The following PHPUnit suite names are invalid: ' . implode(', ', $invalidSuiteNames),
+                    sprintf(
+                        'Invalid test suite names: %s; allowed values: %s',
+                        implode(', ', $invalidSuiteNames),
+                        implode(', ', $validSuiteNames),
+                    ),
                     1,
                 );
             }
@@ -315,24 +330,26 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     }
 
     /**
-     * Run tests.
-     *
-     * @param string[] $suiteNames
-     *
-     * @command test
+     * @phpstan-param array<string> $suiteNames
      */
+    #[Command(name: 'test')]
+    #[Help(
+        description: 'Runs tests.',
+    )]
+    #[Argument(
+        name: 'suiteNames',
+        description: 'Codeception suite names',
+    )]
     public function cmdTestExecute(array $suiteNames): TaskInterface
     {
         return $this->getTaskTestRunSuites($suiteNames);
     }
 
-    /**
-     * Run static code analyzers.
-     *
-     * @command lint
-     *
-     * @initLintReporters
-     */
+    #[Command(name: 'lint')]
+    #[Help(
+        description: 'Runs code style checkers.',
+    )]
+    #[InitLintReporters]
     public function cmdLintExecute(): TaskInterface
     {
         return $this
@@ -345,35 +362,30 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
             ]));
     }
 
-    /**
-     * Run phpcs.
-     *
-     * @command lint:phpcs
-     *
-     * @initLintReporters
-     */
+    #[Command(name: 'lint:phpcs')]
+    #[Help(
+        description: 'Runs phpcs.',
+    )]
+    #[InitLintReporters]
     public function cmdLintPhpcsExecute(): TaskInterface
     {
         return $this->getTaskPhpcsLint();
     }
 
-    /**
-     * Runs phpstan analyze.
-     *
-     * @command lint:phpstan
-     *
-     * @initLintReporters
-     */
+    #[Command(name: 'lint:phpstan')]
+    #[Help(
+        description: 'Runs phpstan analyze.',
+    )]
+    #[InitLintReporters]
     public function cmdLintPhpstanExecute(): TaskInterface
     {
         return $this->getTaskPhpstanAnalyze();
     }
 
-    /**
-     * Runs circleci validate.
-     *
-     * @command lint:circleci-config
-     */
+    #[Command(name: 'lint:circleci-config')]
+    #[Help(
+        description: 'Runs circleci validate.',
+    )]
     public function cmdLintCircleciConfigExecute(): ?TaskInterface
     {
         return $this->getTaskCircleCiConfigValidate();
@@ -445,10 +457,10 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
             $suiteNames = ['all'];
         }
 
-        /** @phpstan-var array<string, php-executable> $phpExecutables */
+        /** @phpstan-var array<string, PhpExecutable> $phpExecutables */
         $phpExecutables = array_filter(
-            (array) $this->getConfig()->get('php.executables'),
-            fn(array $php): bool => !empty($php['enabled']),
+            $this->getConfig()->get('php.executables'),
+            new EnabledFilter(),
         );
 
         $cb = $this->collectionBuilder();
@@ -462,55 +474,29 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     }
 
     /**
-     * @phpstan-param php-executable $php
+     * @phpstan-param PhpExecutable $php
      */
     protected function getTaskTestRunSuite(string $suite, array $php): TaskInterface
     {
-        $cmdPattern = '';
-        $cmdArgs = [];
-        foreach ($php['envVars'] ?? [] as $envName => $envValue) {
-            $cmdPattern .= "{$envName}";
-            if ($envValue === null) {
-                $cmdPattern .= ' ';
-            } else {
-                $cmdPattern .= '=%s ';
-                $cmdArgs[] = escapeshellarg($envValue);
-            }
-        }
+        $command = $php['command'];
+        $command[] = "{$this->binDir}/phpunit";
 
-        $cmdPattern .= '%s';
-        $cmdArgs[] = $php['command'];
-
-        $cmdPattern .= ' %s';
-        $cmdArgs[] = escapeshellcmd("{$this->binDir}/phpunit");
-
-        $cmdPattern .= ' --colors=%s';
-        $cmdArgs[] = escapeshellarg('always');
-
-        if ($this->gitHook === 'pre-commit') {
-            $cmdPattern .= ' --no-logging';
-            $cmdPattern .= ' --no-coverage';
-        }
-
+        $cb = $this->collectionBuilder();
         if ($suite !== 'all') {
-            $cmdPattern .= ' --testsuite %s';
-            $cmdArgs[] = escapeshellarg($suite);
+            $command[] = "--testsuite=$suite";
         }
 
-        $command = vsprintf($cmdPattern, $cmdArgs);
-
-        return $this
-            ->collectionBuilder()
+        return $cb
             ->addCode(function () use ($command, $php) {
                 $this->output()->writeln(strtr(
                     '<question>[{name}]</question> runs <info>{command}</info>',
                     [
-                        '{name}' => 'PHPUnit',
-                        '{command}' => $command,
+                        '{name}' => 'Test',
+                        '{command}' => implode(' ', $command),
                     ]
                 ));
 
-                $process = Process::fromShellCommandline(
+                $process = new Process(
                     $command,
                     null,
                     $php['envVars'] ?? null,

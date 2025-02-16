@@ -61,7 +61,7 @@ parameters:
 		php-executable: '''
 			array{
 				enabled: bool,
-				command: string,
 				envVars?: array<string, ?string>,
+				command: array<string>,
 			}
 		'''

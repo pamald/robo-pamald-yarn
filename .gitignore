@@ -2,7 +2,6 @@
 /.cache/
 /reports/
 
-
 ### Composer.
 /vendor/
 /pamald-robo-pamald-yarn-*.tar
@@ -10,28 +9,23 @@
 /pamald-robo-pamald-yarn-*.tar.gz
 /pamald-robo-pamald-yarn-*.zip
 
-
 ### Composer Suite.
 /.composer-suite/
 /composer.local.json
 /composer.local.lock
 
-
 ### PHPUnit.
 /phpunit.xml
-
 
 ### PHP Code Sniffer.
 /phpcs.xml
 
-
 ### PHPStan.
+/tests/src/Phpstan.php
 /phpstan.neon
-
 
 ### Robo.
 /robo.yml
-
 
 ### sweetchuck/git-hooks.
 /.git-hooks.local

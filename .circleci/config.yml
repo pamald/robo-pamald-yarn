@@ -85,6 +85,7 @@ commands:
                 run:
                     name: 'Run linters'
                     command: |
+                        "$(composer config 'bin-dir')/robo" build
                         "$(composer config 'bin-dir')/robo" --ansi lint
 
     test:

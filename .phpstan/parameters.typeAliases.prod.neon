@@ -1,10 +1,18 @@
 parameters:
 	typeAliases:
-		robo-pamald-yarn-collect-packages-task-options: '''
+		robo-pamald-yarn-collect-dependencies-task-options: '''
 			array{
 				assetNamePrefix?: string,
-				collector?: null|\Pamald\PamaldYarn\PackageCollector,
+				collector?: null|\Pamald\PamaldYarn\DependencyCollector,
 				lock?: null|array<string, mixed>,
 				json?: null|array<string, mixed>,
+			}
+		'''
+		robo-pamald-yarn-modify-commit-msg-parts-task-options: '''
+			array{
+				assetNamePrefix?: string,
+				sha1?: string,
+				patterns?: string,
+				stateKeyCommitMsgParts?: string,
 			}
 		'''

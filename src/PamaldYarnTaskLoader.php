@@ -7,10 +7,14 @@ namespace Pamald\Robo\PamaldYarn;
 use League\Container\ContainerAwareInterface;
 use Robo\Collection\CollectionBuilder;
 
+/**
+ * @phpstan-import-type RoboPamaldYarnCollectDependenciesTaskOptions from \Pamald\Robo\PamaldYarn\Phpstan
+ * @phpstan-import-type RoboPamaldYarnModifyCommitMsgPartsTaskOptions from \Pamald\Robo\PamaldYarn\Phpstan
+ */
 trait PamaldYarnTaskLoader
 {
     /**
-     * @phpstan-param robo-pamald-yarn-collect-packages-task-options $options
+     * @phpstan-param RoboPamaldYarnCollectDependenciesTaskOptions $options
      *
      * @return \Pamald\Robo\PamaldYarn\Task\CollectYarnPackagesTask|\Robo\Collection\CollectionBuilder
      */
@@ -24,7 +28,7 @@ trait PamaldYarnTaskLoader
     }
 
     /**
-     * @phpstan-param robo-pamald-modify-commit-msg-parts-task-options $options
+     * @phpstan-param RoboPamaldYarnModifyCommitMsgPartsTaskOptions $options
      *
      * @return \Pamald\Robo\PamaldYarn\Task\ModifyCommitMsgPartsTask|\Robo\Collection\CollectionBuilder
      */

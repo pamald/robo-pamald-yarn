@@ -10,6 +10,9 @@ use Pamald\Robo\PamaldYarn\Tests\Helper\DummyTaskBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+/**
+ * @phpstan-import-type RoboPamaldYarnCollectDependenciesTaskOptions from \Pamald\Robo\PamaldYarn\Phpstan
+ */
 #[CoversClass(CollectYarnPackagesTask::class)]
 #[CoversClass(TaskBase::class)]
 class CollectYarnPackagesTaskTest extends TaskTestBase
@@ -39,7 +42,7 @@ class CollectYarnPackagesTaskTest extends TaskTestBase
                     'exitCode' => 0,
                     'exitMessage' => '',
                     'assets' => [
-                        'pamald.yarnPackages' => [
+                        'pamald.yarn.dependencies' => [
                             'a' => [],
                             'b' => [],
                         ],
@@ -69,7 +72,7 @@ class CollectYarnPackagesTaskTest extends TaskTestBase
 
     /**
      * @phpstan-param array<string, mixed> $expected
-     * @phpstan-param robo-pamald-yarn-collect-packages-task-options $options
+     * @phpstan-param RoboPamaldYarnCollectDependenciesTaskOptions $options
      */
     #[DataProvider('casesRunSuccess')]
     public function testRunSuccess(array $expected, array $options): void
@@ -83,8 +86,8 @@ class CollectYarnPackagesTaskTest extends TaskTestBase
         static::assertSame($expected['exitCode'], $result->getExitCode());
         static::assertSame($expected['exitMessage'], $result->getMessage());
         static::assertSame(
-            array_keys($expected['assets']['pamald.yarnPackages']),
-            array_keys($result['pamald.yarnPackages']),
+            array_keys($expected['assets']['pamald.yarn.dependencies']),
+            array_keys($result['pamald.yarn.dependencies']),
         );
     }
 }

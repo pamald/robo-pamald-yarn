@@ -11,20 +11,24 @@ class ReportTaskTest extends TaskTestBase
         $actual = $this->runRoboCommand(['pamald:report']);
         $expected = [
             'exitCode' => 0,
+            // phpcs:disable Generic.Files.LineLength.TooLong
             'out' => <<< 'Text'
-                +---------------+-----------+-----------+----------------+----------------+---------+---------+
-                | Name          | L Version | R Version | L Relationship | R Relationship | L Depth | R Depth |
-                +---------------+-----------+-----------+----------------+----------------+---------+---------+
-                | find-versions | 5.0.0     | 5.1.0     | dependencies   | dependencies   | direct  | direct  |
-                | semver-regex  | 4.0.1     | 4.2.0     | ?              | ?              | child   | child   |
-                +---------------+-----------+-----------+----------------+----------------+---------+---------+
+                +---------------+-----------+-----------+---------+---------+----------+----------+------------+------------+---------+---------+
+                | Name          | L Version | R Version | L Type  | R Type  | L Link   | R Link   | L Env      | R Env      | L Depth | R Depth |
+                +---------------+-----------+-----------+---------+---------+----------+----------+------------+------------+---------+---------+
+                | Production - Direct                                                                                                           |
+                | find-versions | 5.0.0     | 5.1.0     | package | package | required | required | production | production | direct  | direct  |
+                | Other                                                                                                                         |
+                | semver-regex  | 4.0.1     | 4.2.0     | package | package |          |          |            |            | child   | child   |
+                +---------------+-----------+-----------+---------+---------+----------+----------+------------+------------+---------+---------+
 
                 Text,
+            // phpcs:enable Generic.Files.LineLength.TooLong
             'err' => implode(
                 "\n",
                 [
-                    ' [pamald - Collect Yarn packages] Collect Yarn packages',
-                    ' [pamald - Collect Yarn packages] Collect Yarn packages',
+                    ' [pamald - Collect Yarn dependencies] Collect Yarn dependencies',
+                    ' [pamald - Collect Yarn dependencies] Collect Yarn dependencies',
                     ' [Pamald\Robo\Pamald\Task\LockDifferTask] ',
                     ' [Pamald\Robo\Pamald\Task\ReporterTask] ',
                     '',

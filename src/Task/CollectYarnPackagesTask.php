@@ -4,27 +4,30 @@ declare(strict_types = 1);
 
 namespace Pamald\Robo\PamaldYarn\Task;
 
-use Pamald\PamaldYarn\PackageCollector;
+use Pamald\PamaldYarn\DependencyCollector;
 
+/**
+ * @phpstan-import-type RoboPamaldYarnCollectDependenciesTaskOptions from \Pamald\Robo\PamaldYarn\Phpstan
+ */
 class CollectYarnPackagesTask extends TaskBase
 {
 
-    protected string $taskName = 'pamald - Collect Yarn packages';
+    protected string $taskName = 'pamald - Collect Yarn dependencies';
 
     // region collector
-    protected ?PackageCollector $collector = null;
+    protected ?DependencyCollector $collector = null;
 
-    public function getCollector(): ?PackageCollector
+    public function getCollector(): ?DependencyCollector
     {
         return $this->collector;
     }
 
-    protected function getCollectorFinal(): PackageCollector
+    protected function getCollectorFinal(): DependencyCollector
     {
-        return $this->getCollector() ?: new PackageCollector();
+        return $this->getCollector() ?: new DependencyCollector();
     }
 
-    public function setCollector(?PackageCollector $collector): static
+    public function setCollector(?DependencyCollector $collector): static
     {
         $this->collector = $collector;
 
@@ -85,7 +88,7 @@ class CollectYarnPackagesTask extends TaskBase
     /**
      * {@inheritdoc}
      *
-     * @phpstan-param robo-pamald-yarn-collect-packages-task-options $options
+     * @phpstan-param RoboPamaldYarnCollectDependenciesTaskOptions $options
      */
     public function setOptions(array $options): static
     {
@@ -108,14 +111,14 @@ class CollectYarnPackagesTask extends TaskBase
 
     protected function runHeader(): static
     {
-        $this->printTaskInfo('Collect Yarn packages');
+        $this->printTaskInfo('Collect Yarn dependencies');
 
         return $this;
     }
 
     protected function runDoIt(): static
     {
-        $this->assets['pamald.yarnPackages'] = $this
+        $this->assets['pamald.yarn.dependencies'] = $this
             ->getCollectorFinal()
             ->collect(
                 $this->getLock() ?: [],

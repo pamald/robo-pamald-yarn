@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 use Pamald\Pamald\Reporter\ConsoleTableReporter;
-use Pamald\PamaldYarn\PackageCollector;
+use Pamald\PamaldYarn\DependencyCollector;
 use Pamald\Robo\Pamald\PamaldTaskLoader;
 use Pamald\Robo\PamaldYarn\PamaldYarnTaskLoader;
 use Robo\Tasks;
@@ -47,7 +47,7 @@ class AcceptanceRoboFile extends Tasks
                     file_get_contents("$projectDir/02.yarnlock") ?: '',
                 );
 
-                $state['collector'] = new PackageCollector();
+                $state['collector'] = new DependencyCollector();
 
                 $reporter = new ConsoleTableReporter();
                 $reporter->setTable(new Table($this->output()));
@@ -74,8 +74,8 @@ class AcceptanceRoboFile extends Tasks
             ->addTask(
                 $this
                     ->taskPamaldLockDiffer()
-                    ->deferTaskConfiguration('setLeftPackages', 'left.pamald.yarnPackages')
-                    ->deferTaskConfiguration('setRightPackages', 'right.pamald.yarnPackages')
+                    ->deferTaskConfiguration('setLeftPackages', 'left.pamald.yarn.dependencies')
+                    ->deferTaskConfiguration('setRightPackages', 'right.pamald.yarn.dependencies')
             )
             ->addTask(
                 $this

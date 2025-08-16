@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Pamald\Robo\PamaldYarn\Task;
 
-use Pamald\Pamald\PackageCollectorInterface;
-use Pamald\PamaldYarn\PackageCollector;
+use Pamald\Pamald\DependencyCollectorInterface;
+use Pamald\PamaldYarn\DependencyCollector;
 use Pamald\Robo\Pamald\Task\ModifyCommitMsgPartsTaskBase;
 use Siketyan\YarnLock\YarnLock;
 
@@ -38,9 +38,9 @@ class ModifyCommitMsgPartsTask extends ModifyCommitMsgPartsTaskBase
         return json_decode($fileContent, true);
     }
 
-    protected function getPackageCollector(): PackageCollectorInterface
+    protected function getDependencyCollector(): DependencyCollectorInterface
     {
-        return new PackageCollector();
+        return new DependencyCollector();
     }
 
     protected function isDomesticated(string $lockFilePath): bool
